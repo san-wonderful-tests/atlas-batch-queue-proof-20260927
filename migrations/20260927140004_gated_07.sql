@@ -1,0 +1,2 @@
+-- Gated burst migration 07
+UPDATE "tasks" SET "title" = "title" WHERE FALSE;
