@@ -34,6 +34,11 @@ table "projects" {
     null = true
   }
 
+  column "batch_a" {
+    type = bigint
+    null = true
+  }
+
   primary_key {
     columns = [column.id]
   }
@@ -68,6 +73,11 @@ table "tasks" {
   }
 
   column "due_at" {
+    type = bigint
+    null = true
+  }
+
+  column "batch_b" {
     type = bigint
     null = true
   }
