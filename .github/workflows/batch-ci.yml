@@ -11,8 +11,43 @@ permissions:
 jobs:
   validate-batch:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: atlas
+          POSTGRES_PASSWORD: atlas
+          POSTGRES_DB: atlas_dev
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U atlas -d atlas_dev"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+    env:
+      ATLAS_DEV_URL: postgres://atlas:atlas@127.0.0.1:5432/atlas_dev?sslmode=disable&search_path=public
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Install pinned Atlas CLI
+        run: |
+          mkdir -p "${RUNNER_TEMP}/bin"
+          curl -sSf https://atlasgo.sh | ATLAS_VERSION=v1.2.0 CI=true sh -s -- --no-install -o "${RUNNER_TEMP}/bin/atlas"
+          chmod +x "${RUNNER_TEMP}/bin/atlas"
+          echo "${RUNNER_TEMP}/bin" >> "${GITHUB_PATH}"
+      - name: Validate both Atlas directories against PostgreSQL
+        run: |
+          set -euo pipefail
+          atlas migrate validate --env local --dev-url "${ATLAS_DEV_URL}"
+          atlas migrate validate --env auxiliary --dev-url "${ATLAS_DEV_URL}"
+          atlas migrate diff verify_controller_no_drift --env local --dev-url "${ATLAS_DEV_URL}"
+          atlas migrate diff verify_auxiliary_no_drift --env auxiliary --dev-url "${ATLAS_DEV_URL}"
+          if [[ -n $(git status --porcelain -- migrations migrations_aux) ]]; then
+            echo 'Migration history differs from the desired schemas.' >&2
+            git status --short -- migrations migrations_aux
+            exit 1
+          fi
       - name: Record the exact tested tree
         run: |
           git rev-parse HEAD
