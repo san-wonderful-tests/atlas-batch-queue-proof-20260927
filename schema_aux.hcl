@@ -14,6 +14,11 @@ table "audit_items" {
     null = false
   }
 
+  column "batch_a" {
+    type = bigint
+    null = true
+  }
+
   primary_key {
     columns = [column.id]
   }
