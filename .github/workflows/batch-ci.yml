@@ -1,0 +1,19 @@
+name: Batch CI
+
+on:
+  pull_request:
+  merge_group:
+    types: [checks_requested]
+
+permissions:
+  contents: read
+
+jobs:
+  validate-batch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Record the exact tested tree
+        run: |
+          git rev-parse HEAD
+          git status --porcelain
