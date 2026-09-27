@@ -72,6 +72,11 @@ table "tasks" {
     null = true
   }
 
+  column "batch_b" {
+    type = bigint
+    null = true
+  }
+
   primary_key {
     columns = [column.id]
   }

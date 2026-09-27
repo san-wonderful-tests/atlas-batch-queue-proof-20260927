@@ -1,4 +1,4 @@
-h1:L0dDn9yt1Q25mydX2PGKqaWSUifj4Hg9Fm/jWlCFnlw=
+h1:5irChtEjb5be1OuU2/yaPMlNqMxiSKWKiughMHVfvwc=
 20260813080547_baseline.sql h1:P1eW0nxndAp4xwu22ztXWvIbTsHbUnbPWGd5wspaHLE=
 20260813081330_add_project_owner_email.sql h1:8xqPJ0RnhhHapHoRLZhmEvppSWoFwijDIEYC/NiZRus=
 20260813081614_add_tasks_fixture.sql h1:+0OoCR/wmm/LGw4qDfFMiUSt2VAVAT9s/Eq1VjsZ1Fk=
@@ -39,3 +39,4 @@ h1:L0dDn9yt1Q25mydX2PGKqaWSUifj4Hg9Fm/jWlCFnlw=
 20260927140008_gated_03.sql h1:ox5oAI+sa3U8dqfgTQeSuYY0k72TY5Fv0juhKxbq1OY=
 20260927140009_gated_02.sql h1:3j9vt7phx9Hh9u+K8tS0XbVmpJYJWW1gskOdVW3hz/4=
 20260927140010_gated_01.sql h1:rFMNcqRcNMwEhNLH6CQwWMdFR/JlfoJZ/dJFc4kfMWo=
+20260927174923_batch_b.sql h1:Ac+J6N6KOdnAa7hjrRRpmW3lTyfeLAMXVYNR4qnH+jw=

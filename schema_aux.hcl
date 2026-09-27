@@ -18,3 +18,16 @@ table "audit_items" {
     columns = [column.id]
   }
 }
+
+table "batch_b_events" {
+  schema = schema.public
+
+  column "id" {
+    type = uuid
+    null = false
+  }
+
+  primary_key {
+    columns = [column.id]
+  }
+}
