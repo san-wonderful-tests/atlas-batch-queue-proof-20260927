@@ -14,6 +14,6 @@ To compose a batch locally, start a new branch at `origin/main` and run
 `scripts/compose-batch.sh <candidate-ref>...`. The script keeps each candidate
 head in the batch's commit ancestry, refuses conflicts outside `atlas.sum`,
 allocates new Atlas versions for PR-owned SQL, and records the source-to-final
-mapping in `BATCH_MANIFEST.tsv`. It validates the combined history and desired
+mapping in a branch-specific `batch-manifests/*.tsv` file. It validates the combined history and desired
 schemas before the batch PR is queued. This is a test harness; it does not yet
 verify GitHub reviews or run with a production GitHub App.

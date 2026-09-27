@@ -19,7 +19,19 @@ fi
 migration_dirs=(migrations migrations_aux)
 archive_root=$(mktemp -d)
 trap 'rm -rf -- "${archive_root}"' EXIT
-printf 'source_sha\told_path\tnew_path\tsql_sha256\n' > BATCH_MANIFEST.tsv
+batch_name=$(git branch --show-current)
+batch_name=${batch_name//\//-}
+if [[ ! ${batch_name} =~ ^[[:alnum:]_.-]+$ ]]; then
+  echo 'The batch branch name cannot be used as a manifest filename.' >&2
+  exit 1
+fi
+mkdir -p batch-manifests
+manifest_path="batch-manifests/${batch_name}.tsv"
+if [[ -e ${manifest_path} ]]; then
+  echo "Manifest already exists: ${manifest_path}" >&2
+  exit 1
+fi
+printf 'source_sha\told_path\tnew_path\tsql_sha256\n' > "${manifest_path}"
 
 for ref in "$@"; do
   source_sha=$(git rev-parse "${ref}^{commit}")
@@ -100,11 +112,11 @@ for ref in "$@"; do
       cp -- "${archive_root}/${source_sha}/${path}" "${new_path}"
       atlas migrate hash --config file:///dev/null --dir "${migration_url}"
       sql_sha=$(shasum -a 256 "${new_path}" | awk '{print $1}')
-      printf '%s\t%s\t%s\t%s\n' "${source_sha}" "${path}" "${new_path}" "${sql_sha}" >> BATCH_MANIFEST.tsv
+      printf '%s\t%s\t%s\t%s\n' "${source_sha}" "${path}" "${new_path}" "${sql_sha}" >> "${manifest_path}"
     done
     git add -A -- "${migration_dir}"
   done
-  git add BATCH_MANIFEST.tsv
+  git add "${manifest_path}"
   git commit -m "Finalize Atlas SQL from ${ref}"
 done
 
@@ -118,4 +130,4 @@ if [[ -n $(git status --porcelain -- migrations migrations_aux) ]]; then
   exit 1
 fi
 
-echo "Composed $# PR head(s); BATCH_MANIFEST.tsv records every SQL rename."
+echo "Composed $# PR head(s); ${manifest_path} records every SQL rename."
