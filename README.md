@@ -1,6 +1,9 @@
 # Atlas batch and Merge Queue proof
 
-This synthetic repository tests whether reviewed migration PR commits can be
+The [batch proof and production contract](BATCH_PROOF.md) records the live
+30-PR result, capacity model, and remaining rollout gates.
+
+This synthetic repository tests whether migration PR commits can be
 combined in one batch and merged through GitHub Merge Queue while preserving
 the original PRs as merged. It does not represent Wonderful production CI.
 
