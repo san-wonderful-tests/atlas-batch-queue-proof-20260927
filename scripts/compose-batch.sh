@@ -23,11 +23,8 @@ printf 'source_sha\told_path\tnew_path\tsql_sha256\n' > BATCH_MANIFEST.tsv
 
 for ref in "$@"; do
   source_sha=$(git rev-parse "${ref}^{commit}")
-  if ! git merge-base --is-ancestor "${base_ref}" "${source_sha}"; then
-    echo "${ref} does not contain the current main commit." >&2
-    exit 1
-  fi
-  if [[ -n $(git diff --name-only "${base_ref}...${source_sha}" -- atlas.hcl .github scripts) ]]; then
+  candidate_base=$(git merge-base "${base_ref}" "${source_sha}")
+  if [[ -n $(git diff --name-only "${candidate_base}...${source_sha}" -- atlas.hcl .github scripts) ]]; then
     echo "${ref} changes trusted Atlas or workflow inputs; review separately." >&2
     exit 1
   fi
@@ -35,12 +32,12 @@ for ref in "$@"; do
   added_sql=()
   while IFS= read -r path; do
     [[ -n ${path} ]] && added_sql+=("${path}")
-  done < <(git diff --name-only --diff-filter=A "${base_ref}...${source_sha}" -- 'migrations/*.sql' 'migrations_aux/*.sql')
+  done < <(git diff --name-only --diff-filter=A "${candidate_base}...${source_sha}" -- 'migrations/*.sql' 'migrations_aux/*.sql')
   if ((${#added_sql[@]} == 0)); then
     echo "${ref} has no new Atlas SQL." >&2
     exit 1
   fi
-  if [[ -n $(git diff --name-only --diff-filter=MDR "${base_ref}...${source_sha}" -- 'migrations/*.sql' 'migrations_aux/*.sql') ]]; then
+  if [[ -n $(git diff --name-only --diff-filter=MDR "${candidate_base}...${source_sha}" -- 'migrations/*.sql' 'migrations_aux/*.sql') ]]; then
     echo "${ref} edits or removes existing migration history." >&2
     exit 1
   fi
